@@ -119,18 +119,18 @@ class Version:
 #         ("1.0.1b", "1.0.10-alpha.beta"),
 #         ("1.0.0-rc.1", "1.0.0"),
 #     ]
-
+#
 #     for left, right in to_test:
-#         # assert Version(left) < Version(right), "le failed"
-#         # assert Version(right) > Version(left), "ge failed"
-#         # assert Version(right) != Version(left), "neq failed"
-#         assert Version(right) == Version(left), "eq failed"
+#         assert Version(left) < Version(right), "le failed"
+#         assert Version(right) > Version(left), "ge failed"
+#         assert Version(right) != Version(left), "neq failed"
+#         # assert Version(right) == Version(left), "eq failed"
 
 
-def main():
-    v = Version("1.1.1")
-    print(v)
+# def main():
+#     v = Version("1.1.1")
+#     print(v)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
