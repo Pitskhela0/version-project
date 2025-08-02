@@ -1,43 +1,56 @@
 # Semantic Version Comparator
 
-This Python module provides a scaffold for implementing semantic version comparison,  
-following the [Semantic Versioning](https://semver.org/) specification.
+This Python module provides parsing and comparing semantic versions according to the Semantic Versioning specification.
 
 ---
 
-## Example Usage
+## Overview
 
-The `Version` class is designed to support semantic comparisons using standard operators:
+This library helps you handle version strings in your Python projects. Whether you're building a package manager, dependency resolver, or just need to compare software versions, this tool makes it simple and reliable.
 
-```python
-Version("1.1.3") < Version("2.2.3")      # True
-Version("1.3.0") > Version("0.3.0")      # True
-Version("0.3.0b") < Version("1.2.42")    # True
-Version("1.3.42") == Version("42.3.1")   # False
-```
-
-skeletoon
-```python
-class Version:
-    def __init__(self, version):
-        pass
-```
+## Features
+- SemVer style comparison between versions
+- Parse version strings like 1.2.3, 2.0.0-alpha, 1.0.0+build123
+- Validate versions
+- Support pre_release versions and metadata
 
 
-test cases
-```python
-def main():
-    to_test = [
-        ("1.0.0", "2.0.0"),
-        ("1.0.0", "1.42.0"),
-        ("1.2.0", "1.2.42"),
-        ("1.1.0-alpha", "1.2.0-alpha.1"),
-        ("1.0.1b", "1.0.10-alpha.beta"),
-        ("1.0.0-rc.1", "1.0.0"),
-    ]
+## Installation
+``git clone https://github.com/Pitskhela0/version-project.git``
 
-    for left, right in to_test:
-        assert Version(left) < Version(right), "le failed"
-        assert Version(right) > Version(left), "ge failed"
-        assert Version(right) != Version(left), "neq failed"
-```
+``cd version-project``
+
+``uv sync``
+
+## Examples and operations
+
+### supported operations
+- <, >, ==, != - Version comparison
+- str() - String representation
+
+### ordering example
+~~~
+versions = [
+    "1.0.0-alpha",
+    "1.0.0-alpha.1", 
+    "1.0.0-alpha.beta",
+    "1.0.0-beta",
+    "1.0.0-beta.2",
+    "1.0.0-beta.11", 
+    "1.0.0-rc.1",
+    "1.0.0"
+]
+
+# ordering follows SemVer specification
+for i in range(len(versions) - 1):
+    assert Version(versions[i]) < Version(versions[i + 1])
+    print(f"{versions[i]} < {versions[i + 1]}")
+~~~
+## Testing
+~~~
+uv run pytest
+~~~
+
+## Resources
+SemVer 2.0.0:
+https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions
