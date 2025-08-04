@@ -1,6 +1,8 @@
 import re
+from functools import total_ordering
 
 
+@total_ordering
 class Version:
     version_regex = (
         r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
@@ -12,11 +14,11 @@ class Version:
     @staticmethod
     def extract_version_components(version):
         if not isinstance(version, str):
-            raise Exception("Version type is not a string")
+            raise ValueError("Version type is not a string")
 
         matching = re.match(Version.version_regex, version)
         if not matching:
-            raise Exception("Version does not have valid format")
+            raise ValueError("Version does not have valid format")
 
         major, minor, patch, pre_release, build = matching.groups()
 
@@ -30,11 +32,11 @@ class Version:
 
     def __init__(self, version):
         values = Version.extract_version_components(version)
-        self.major = values.get("major")
-        self.minor = values.get("minor")
-        self.patch = values.get("patch")
-        self.pre_release = values.get("pre_release")
-        self.build = values.get("build")
+        self.major = values["major"]
+        self.minor = values["minor"]
+        self.patch = values["patch"]
+        self.pre_release = values["pre_release"]
+        self.build = values["build"]
 
     @staticmethod
     def lt_pre_release(v1, v2):
@@ -80,12 +82,6 @@ class Version:
                 self.minor == value.minor and
                 self.patch == value.patch and
                 self.pre_release == value.pre_release)
-
-    def __ne__(self, value):
-        return not self.__eq__(value)
-
-    def __gt__(self, value):
-        return self.__ne__(value) and not self.__lt__(value)
 
     def __str__(self):
         return (f"Version: {self.major}.{self.minor}.{self.patch}"
