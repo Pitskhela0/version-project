@@ -17,12 +17,12 @@ class TestVersionParsing:
     def test_invalid_version_strings(self):
         """ invalid version strings -> raise exceptions"""
         invalid_versions = [
-            "1.2.3.4",  # many parts
-            "01.2.3",  # leading zero
-            "1.2.3-",  # empty pre-release
-            "1.2.3+",  # empty build
-            "",  # empty string
-            "1.2.3-alpha..1"  # many dots
+            "1.2.3.4",
+            "01.2.3",
+            "1.2.3-",
+            "1.2.3+",
+            "",
+            "1.2.3-alpha..1"
         ]
 
         for invalid in invalid_versions:
@@ -38,7 +38,7 @@ class TestVersionEquality:
         assert Version("1.2.3") == Version("1.2.3")
         assert Version("10.20.30") == Version("10.20.30")
 
-    def test_equal_prerelease_versions(self):
+    def test_equal_pre_release_versions(self):
         """ equality of pre-release versions"""
         assert Version("1.2.3-alpha") == Version("1.2.3-alpha")
         assert Version("2.0.0-rc.1.2.3") == Version("2.0.0-rc.1.2.3")
@@ -61,27 +61,27 @@ class TestVersionComparison:
         # comparison based on patch version differences
         assert Version("1.2.10") > Version("1.2.9")
 
-    def test_prerelease_vs_release(self):
+    def test_pre_release_vs_release(self):
         """ test pre-release versions are less than release versions"""
         assert Version("1.0.0-beta") < Version("1.0.0")
         assert Version("2.0.0-alpha") < Version("2.0.0")
 
-    def test_prerelease_alphabetical_comparison(self):
+    def test_pre_release_alphabetical_comparison(self):
         """ alphabetical comparison of pre-release identifiers"""
         assert Version("1.0.0-alpha") < Version("1.0.0-beta")
         assert Version("1.0.0-beta") < Version("1.0.0-gamma")
 
-    def test_prerelease_numeric_comparison(self):
+    def test_pre_release_numeric_comparison(self):
         """ numeric comparison of pre-release identifiers"""
         assert Version("1.0.0-alpha.1") < Version("1.0.0-alpha.2")
         assert Version("1.0.0-rc.1") < Version("1.0.0-rc.10")
 
-    def test_prerelease_mixed_comparison(self):
+    def test_pre_release_mixed_comparison(self):
         """ mixed numeric/alphabetic pre-release comparison"""
         assert Version("1.0.0-alpha.1") < Version("1.0.0-alpha.beta")
         assert Version("1.0.0-1") < Version("1.0.0-alpha")
 
-    def test_prerelease_length_comparison(self):
+    def test_pre_release_length_comparison(self):
         """  test if longer pre-release identifiers win when prefixes are equal"""
         assert Version("1.0.0-alpha") < Version("1.0.0-alpha.1")
         assert Version("1.0.0-alpha.1") < Version("1.0.0-alpha.1.beta")
@@ -130,7 +130,7 @@ class TestEdgeCases:
         assert Version("0.0.0") == Version("0.0.0")
         assert Version("0.0.1") > Version("0.0.0")
 
-    def test_complex_prerelease_identifiers(self):
+    def test_complex_pre_release_identifiers(self):
         """ complex pre-release identifier pattern"""
         assert Version("1.0.0-x.7.z.92") < Version("1.0.0-x.7.z.93")
         assert Version("1.0.0-alpha-beta") > Version("1.0.0-alpha.beta")
@@ -141,5 +141,4 @@ class TestEdgeCases:
         v2 = Version("1.0.0+exp.sha.5114f85")
         v3 = Version("1.0.0+21AF26D3-117B344092BD")
 
-        # they should equal since build metadata is ignored
         assert v1 == v2 == v3
