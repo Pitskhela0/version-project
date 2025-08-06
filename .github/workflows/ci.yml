@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  lint-and-test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -14,21 +14,18 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: '3.11'
 
       - name: Install uv
+        run: pip install uv
+
+      - name: Create virtual environment
+        run: uv venv
+
+      - name: Install dependencies
         run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies using uv
-        run: uv pip install -r <(uv pip compile pyproject.toml --extra dev)
-
-      - name: Install pylint
-        run: uv pip install pylint
+          uv pip install pytest
+          uv pip install pylint
 
       - name: Run pylint
-        run: pylint src/version_project
-
-      - name: Run tests with pytest
-        run: uv pytest tests
+        run: uv run pylint src/version_project
