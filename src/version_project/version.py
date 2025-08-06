@@ -1,26 +1,48 @@
+""" Module handles version parsing and comparison"""
 import re
 from functools import total_ordering
 
 
 @total_ordering
 class Version:
-    version_regex = (
+    """ Version class represents and compares software version numbers """
+
+    strict_version_regex = (
         r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
         r"(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
         r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
         r"(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
     )
 
+    permissive_version_regex = (
+        r"^(0|[1-9]\d*)\." 
+        r"(0|[1-9]\d*)\." 
+        r"(0|[1-9]\d*)" 
+        r"(?:(?:-)?(" 
+        r"(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
+        r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*"
+        r"))?" 
+        r"(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+    )
+
     @staticmethod
     def extract_version_components(version):
+        """ Unpacks version core and other elements from version string """
+
         if not isinstance(version, str):
             raise ValueError("Version type is not a string")
 
-        matching = re.match(Version.version_regex, version)
-        if not matching:
-            raise ValueError("Version does not have valid format")
+        strict_matching = re.match(Version.strict_version_regex, version)
+        permissive_matching = re.match(Version.permissive_version_regex, version)
+        if strict_matching:
+            major, minor, patch, pre_release, build = strict_matching.groups()
+        elif permissive_matching:
+            major, minor, patch, pre_release, build = permissive_matching.groups()
+            if pre_release == "-":
+                raise ValueError("Version does not have valid format: pre_release is empty")
 
-        major, minor, patch, pre_release, build = matching.groups()
+        else:
+            raise ValueError("Version does not have valid format")
 
         return {
             "major": int(major),
@@ -40,6 +62,8 @@ class Version:
 
     @staticmethod
     def lt_pre_release(v1, v2):
+        """ Compares pre_release contents to each other """
+
         self_pre_release_list = v1.pre_release.split(".")
         other_pre_release_list = v2.pre_release.split(".")
 
@@ -72,10 +96,10 @@ class Version:
         if ((self.pre_release is None and value.pre_release is None) or
                 (self.pre_release is None and value.pre_release is not None)):
             return False
-        elif self.pre_release is not None and value.pre_release is None:
+        if self.pre_release is not None and value.pre_release is None:
             return True
-        else:
-            return Version.lt_pre_release(self, value)
+
+        return Version.lt_pre_release(self, value)
 
     def __eq__(self, value):
         return (self.major == value.major and
