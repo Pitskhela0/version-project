@@ -1,11 +1,12 @@
-""" Module handles version parsing and comparison"""
+"""Module handles version parsing and comparison"""
+
 import re
 from functools import total_ordering
 
 
 @total_ordering
 class Version:
-    """ Version class represents and compares software version numbers """
+    """Version class represents and compares software version numbers"""
 
     strict_version_regex = (
         r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
@@ -15,19 +16,19 @@ class Version:
     )
 
     permissive_version_regex = (
-        r"^(0|[1-9]\d*)\." 
-        r"(0|[1-9]\d*)\." 
-        r"(0|[1-9]\d*)" 
-        r"(?:(?:-)?(" 
+        r"^(0|[1-9]\d*)\."
+        r"(0|[1-9]\d*)\."
+        r"(0|[1-9]\d*)"
+        r"(?:(?:-)?("
         r"(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
         r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*"
-        r"))?" 
+        r"))?"
         r"(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
     )
 
     @staticmethod
     def extract_version_components(version):
-        """ Unpacks version core and other elements from version string """
+        """Unpacks version core and other elements from version string"""
 
         if not isinstance(version, str):
             raise ValueError("Version type is not a string")
@@ -39,7 +40,9 @@ class Version:
         elif permissive_matching:
             major, minor, patch, pre_release, build = permissive_matching.groups()
             if pre_release == "-":
-                raise ValueError("Version does not have valid format: pre_release is empty")
+                raise ValueError(
+                    "Version does not have valid format: pre_release is empty"
+                )
 
         else:
             raise ValueError("Version does not have valid format")
@@ -49,7 +52,7 @@ class Version:
             "minor": int(minor),
             "patch": int(patch),
             "pre_release": pre_release,
-            "build": build
+            "build": build,
         }
 
     def __init__(self, version):
@@ -62,7 +65,7 @@ class Version:
 
     @staticmethod
     def lt_pre_release(v1, v2):
-        """ Compares pre_release contents to each other """
+        """Compares pre_release contents to each other"""
 
         self_pre_release_list = v1.pre_release.split(".")
         other_pre_release_list = v2.pre_release.split(".")
@@ -93,8 +96,9 @@ class Version:
         if self_core != other_core:
             return self_core < other_core
 
-        if ((self.pre_release is None and value.pre_release is None) or
-                (self.pre_release is None and value.pre_release is not None)):
+        if (self.pre_release is None and value.pre_release is None) or (
+            self.pre_release is None and value.pre_release is not None
+        ):
             return False
         if self.pre_release is not None and value.pre_release is None:
             return True
@@ -102,12 +106,16 @@ class Version:
         return Version.lt_pre_release(self, value)
 
     def __eq__(self, value):
-        return (self.major == value.major and
-                self.minor == value.minor and
-                self.patch == value.patch and
-                self.pre_release == value.pre_release)
+        return (
+            self.major == value.major
+            and self.minor == value.minor
+            and self.patch == value.patch
+            and self.pre_release == value.pre_release
+        )
 
     def __str__(self):
-        return (f"Version: {self.major}.{self.minor}.{self.patch}"
-                f"{'-' + self.pre_release if self.pre_release else ''}"
-                f"{'+' + self.build if self.build else ''}")
+        return (
+            f"Version: {self.major}.{self.minor}.{self.patch}"
+            f"{'-' + self.pre_release if self.pre_release else ''}"
+            f"{'+' + self.build if self.build else ''}"
+        )
